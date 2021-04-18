@@ -27,6 +27,8 @@ public class AsyncPacketListenerFor1_8to1_11 extends AsyncPacketListener {
 				try {
 				    PacketContainer keepAlivePacket = e.getPacket();
 				    StructureModifier<Integer> packetData = keepAlivePacket.getIntegers();
+				    if (packetData == null)
+				    	return;
 				    Integer packetValue = packetData.readSafely(0);
 				    KeepAlivePacket packetobj = packetThread.getPing().get(Long.valueOf(packetValue));
 				    if (packetobj != null) {
@@ -51,7 +53,7 @@ public class AsyncPacketListenerFor1_8to1_11 extends AsyncPacketListener {
 				    } else {
 					if (packetThread.sentPackets.contains(Long.valueOf(packetValue))) {
 					    Bukkit.getScheduler().runTaskLater(getPlugin(),
-						    () -> e.getPlayer().kickPlayer("[AsyncKeepAlive] Timed out"), 0);
+						    () -> e.getPlayer().kickPlayer("Timed out (Internetinizi kontrol edin)"), 0);
 					    packetThread.sentPackets.remove(Long.valueOf(packetValue));
 					    return;
 					}
@@ -60,9 +62,10 @@ public class AsyncPacketListenerFor1_8to1_11 extends AsyncPacketListener {
 						    + String.valueOf(packetValue) + " from " + e.getPlayer().getName());
 				    }
 
-				} catch (Throwable t) {
-				    System.out.println("Caught a exception");
-				    System.out.println(t.getMessage());
+				} catch (final Throwable t) {
+				    System.out.println("Caught an exception");
+				    if (t.getMessage() != null)
+				    	System.out.println(t.getMessage());
 				    t.printStackTrace();
 				}
 			    }
@@ -70,7 +73,7 @@ public class AsyncPacketListenerFor1_8to1_11 extends AsyncPacketListener {
 		    }).start();
 	} catch (
 
-	Throwable t) {
+	final Throwable t) {
 	    t.printStackTrace();
 	    return;
 	}
